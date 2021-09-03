@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import GMath from './GMath/GMath'
 import './index.css'
 
