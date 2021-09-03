@@ -1,0 +1,25 @@
+.App {
+  text-align: center;
+}
+body {
+  height: 100%;
+  padding: 2em 0;
+  background: #121212;
+  font-family: Roboto, "Open Sans", sans-serif;
+}
+
+#gm-div {
+  width: 800px;
+  height: 300px;
+  border: 1px solid gray;
+}
+
+#gm-div.solved {
+  box-shadow: lightgreen 0 0 12px 3px;
+}
+
+#gm-div .gm-btn-fullscreen {
+  background-color: gray;
+  color: black;
+  bottom: 20px;
+}
