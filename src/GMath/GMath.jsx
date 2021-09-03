@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { canvasSmallToolbarSettings, derivationSettings, flexibleComparisonOptions, strictComparisonOptions } from './configurations'
 
 function GMath ({ eqs, matchCommuted, matchAnyEq }) {
   const [canvas, setCanvas] = useState(null)
   const [paths, setPaths] = useState([])
   const [isSolved, setIsSolved] = useState(false)
-  const container = useRef()
   useEffect(() => {
     window.loadGM(() => initCanvas(), { version: 'latest' })
+    // eslint-disable-next-line
   }, [])
 
   useEffect(() => {
     setupDerivations()
+    // eslint-disable-next-line
   }, [canvas])
 
   const initCanvas = () => {
@@ -76,10 +77,6 @@ function GMath ({ eqs, matchCommuted, matchAnyEq }) {
     )
   }
 
-  const adjustScale = (factor) => {
-    canvas.model.scaling(canvas.model.scaling() * factor)
-  }
-
   const adjustColumns = () => {
     const h = canvas.model.size().height
     paths.forEach((path) => {
@@ -106,7 +103,7 @@ function GMath ({ eqs, matchCommuted, matchAnyEq }) {
 
   return (
     <div className='App'>
-      <div id='gm-div' ref={container} className={isSolved && 'solved'} style={{ height: '450px' }} />
+      <div id='gm-div' className={isSolved && 'solved'} style={{ height: '450px' }} />
     </div>
   )
 }
