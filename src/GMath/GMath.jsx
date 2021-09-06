@@ -1,40 +1,59 @@
-import { useEffect, useState } from 'react'
-import { canvasSmallToolbarSettings, derivationSettings, flexibleComparisonOptions, strictComparisonOptions } from './configurations'
-
+import React, { useEffect, useState } from 'react'
+import { canvasSmallToolbarSettings, derivationSettings, flexibleComparisonOptions, strictComparisonOptions } from './configuration'
+import { Container } from './styled'
 function GMath ({ eqs, matchCommuted, matchAnyEq }) {
   const [canvas, setCanvas] = useState(null)
   const [paths, setPaths] = useState([])
   const [isSolved, setIsSolved] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+  // const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
-    window.loadGM(() => initCanvas(), { version: 'latest' })
+    !window.gmath && loadGMScript()
     // eslint-disable-next-line
   }, [])
-
+  const loadGMScript = () => {
+    const script = document.createElement('script')
+    script.id = 'gmScript'
+    script.src = 'https://graspablemath.com/shared/libs/gmath/gm-inject.js'
+    script.onload = () => onGMLoad()
+    document.body.appendChild(script)
+    // const scripted = document.getElementById('gmScript')
+    // setLoaded(!scripted)
+  }
+  const onGMLoad = () => {
+    const { loadGM } = window
+    loadGM(() => initCanvas())
+  }
   useEffect(() => {
     setupDerivations()
     // eslint-disable-next-line
-  }, [canvas])
-
-  const initCanvas = () => {
-    window.gmath.setDarkTheme(true)
-    window.gmath.SettingsType.get('Derivation').defaults.setAll(
+  }, [canvas]) 
+  const initCanvas = async () => {
+    const { gmath } = window
+    // setIsLoading(true)
+    gmath.setDarkTheme(true)
+    gmath.SettingsType.get('Derivation').defaults.setAll(
       derivationSettings
     )
-
+    // setIsLoading(false)
     if (canvas) {
       canvas.controller.reset()
       document
         .querySelectorAll('.divider-line')
         .forEach((e) => e.parentNode.removeChild(e))
-    } else { setCanvas(new window.gmath.Canvas('#gm-div', canvasSmallToolbarSettings)) }
-    setPaths([])
+    } else {
+      console.log({ gmath })
+      const canvas = await new gmath.Canvas('#gm-div', canvasSmallToolbarSettings)
+      setCanvas(canvas)
+      setPaths([])
+    }
   }
-
   const setupDerivations = () => {
+    // if (isLoading) return
     if (!canvas) return
+    console.log({canvas});
     const width = canvas.model.viewport().width
     const col = width / eqs.length
-
     const newDerivations = eqs.map(({ start }, i) => {
       if (i) addLine(col * i)
       return canvas.model.createElement(
@@ -44,18 +63,21 @@ function GMath ({ eqs, matchCommuted, matchAnyEq }) {
         (der) => der.moveElement({ x: -der.size.width / 2, y: 0 })
       )
     })
-
     canvas.controller.on('timelineChange', () => {
       const isSolved = checkIfSolved(newDerivations)
       setIsSolved(isSolved)
       setTimeout(() => adjustColumns(), 0)
     })
+    canvas.controller.on('start_hwr', () => {
+      // const isSolved = checkIfSolved(newDerivations)
+      // setIsSolved(isSolved)
+      // setTimeout(() => adjustColumns(), 0)
+      console.log('lorem');
+    })
     checkIfSolved(newDerivations)
   }
-
   const checkIfSolved = (derivations) => {
     return eqs.every(({ goal }, i) => {
-      console.log(goal)
       if (!derivations) return null
       if (goal === '') return true // ignore empty goals
       if (matchAnyEq) {
@@ -65,18 +87,17 @@ function GMath ({ eqs, matchCommuted, matchAnyEq }) {
       }
     })
   }
-
   const isEqual = (der, eq) => {
+    const { gmath } = window
     const opts = matchCommuted
       ? flexibleComparisonOptions
       : strictComparisonOptions
-    return window.gmath.AlgebraModel.algExpressionsAreEqual(
+    return gmath.AlgebraModel.algExpressionsAreEqual(
       opts,
       der.getLastModel(),
       eq
     )
   }
-
   const adjustColumns = () => {
     const h = canvas.model.size().height
     paths.forEach((path) => {
@@ -84,7 +105,6 @@ function GMath ({ eqs, matchCommuted, matchAnyEq }) {
       path.update()
     })
   }
-
   const addLine = (x) => {
     const h = canvas.model.viewport().height
     const newPath = canvas.model.createPath({
@@ -100,12 +120,25 @@ function GMath ({ eqs, matchCommuted, matchAnyEq }) {
     tempPath.push(newPath)
     setPaths(tempPath)
   }
-
+  const loadDesmosScript = () => {
+    const script = document.createElement('script')
+    script.id = 'desmosScript'
+    script.src = 'https://www.desmos.com/api/v1.5/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6'
+    document.body.appendChild(script)
+  }
+  // if (isLoading) return <h1>Loading</h1>
   return (
-    <div className='App'>
-      <div id='gm-div' className={isSolved && 'solved'} style={{ height: '450px' }} />
+    <div>
+      <Container
+        id='gm-div'
+        className={isSolved && 'solved'}
+        style={{ height: '450px' }}
+      />
+      {loaded
+        ? <span>Desmos Script Loaded</span>
+        : <button onClick={loadDesmosScript}>Load Desmos Script</button>
+      }
     </div>
   )
 }
-
 export default GMath
