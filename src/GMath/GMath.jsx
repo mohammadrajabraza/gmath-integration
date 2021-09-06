@@ -5,7 +5,6 @@ function GMath ({ eqs, matchCommuted, matchAnyEq }) {
   const [canvas, setCanvas] = useState(null)
   const [paths, setPaths] = useState([])
   const [isSolved, setIsSolved] = useState(false)
-  const [loaded, setLoaded] = useState(false)
   // const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
     !window.gmath && loadGMScript()
@@ -134,10 +133,7 @@ function GMath ({ eqs, matchCommuted, matchAnyEq }) {
         className={isSolved && 'solved'}
         style={{ height: '450px' }}
       />
-      {loaded
-        ? <span>Desmos Script Loaded</span>
-        : <button onClick={loadDesmosScript}>Load Desmos Script</button>
-      }
+      <span>Desmos Script Loaded</span>  
     </div>
   )
 }
