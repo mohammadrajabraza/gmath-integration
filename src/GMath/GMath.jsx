@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { canvasSmallToolbarSettings, derivationSettings, flexibleComparisonOptions, strictComparisonOptions } from './configuration'
+import { canvasSmallToolbarSettings, derivationSettings, flexibleComparisonOptions, strictComparisonOptions } from './configurations'
 function GMath ({ eqs, matchCommuted, matchAnyEq }) {
   const [canvas, setCanvas] = useState(null)
   const [paths, setPaths] = useState([])
