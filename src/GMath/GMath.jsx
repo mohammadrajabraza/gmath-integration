@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { canvasSmallToolbarSettings, derivationSettings, flexibleComparisonOptions, strictComparisonOptions } from './configuration'
-import { Container } from './styled'
 function GMath ({ eqs, matchCommuted, matchAnyEq }) {
   const [canvas, setCanvas] = useState(null)
   const [paths, setPaths] = useState([])
@@ -128,7 +127,7 @@ function GMath ({ eqs, matchCommuted, matchAnyEq }) {
   // if (isLoading) return <h1>Loading</h1>
   return (
     <div>
-      <Container
+      <div
         id='gm-div'
         className={isSolved && 'solved'}
         style={{ height: '450px' }}
